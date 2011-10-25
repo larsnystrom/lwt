@@ -1,6 +1,8 @@
 #!/bin/bash
 #Lars Web Tools
 
+#Detta är ett test
+
 if [ $# -lt 2 ]
 then
         echo "Usage : $0 command project [extra]"
