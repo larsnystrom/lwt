@@ -1,0 +1,48 @@
+if [ ! -d $WEB_DIR -a ! -f $VIRTUAL_HOST_FILE ]; then
+	echo "Neither the web directory [$WEB_DIR] nor the Virtual Host file [$VIRTUAL_HOST_FILE] could be found."
+	echo "Aborting."
+	exit 1
+fi
+
+if [ ! -d "$BACKUP_PATH/$PROJECT" ]; then
+	mkdir "$BACKUP_PATH/$PROJECT"
+fi
+
+if [ -f "$BACKUP_FILE" ]; then
+	echo "A backup was made less than a minute ago."
+	echo "Aborting."
+	exit 1
+fi
+
+if [ -d "$BACKUP_TEMP_PATH" ]; then
+	echo "Temporary directory already exists."
+	echo "Aborting."
+	exit 1
+else
+	mkdir "$BACKUP_TEMP_PATH"
+fi
+
+if [ -d $WEB_DIR ]; then
+	echo -n "Copying [$WEB_DIR]... "
+	cp -r "$WEB_DIR" "$BACKUP_TEMP_PATH/$PROJECT"
+	echo "done!"
+else
+	echo "NOTICE: The web directory [$WEB_DIR] could not be found. It will not be included in the backup."
+fi
+
+if [ -f $VIRTUAL_HOST_FILE ]; then
+	echo -n "Copying [$VIRTUAL_HOST_FILE]... "
+	cp "$VIRTUAL_HOST_FILE" "$BACKUP_TEMP_PATH/$LOCAL_DOMAIN"
+	echo "done!"
+else
+	echo "NOTICE: The Virtual Host file [$VIRTUAL_HOST_FILE] could not be found. It will not be included in the backup."
+fi
+
+echo -n "Compressing the backup to [$BACKUP_FILE]... "
+cd "$BACKUP_TEMP_PATH"
+tar -jcf "$BACKUP_FILE" *
+echo "done!"
+
+echo -n "Removing temporary files... "
+rm -r "$BACKUP_TEMP_PATH"
+echo "done!"

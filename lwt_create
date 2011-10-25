@@ -1,0 +1,67 @@
+if [ -d $WEB_DIR -o -f $VIRTUAL_HOST_FILE ]; then
+	echo "The directory [$WEB_DIR] or the virtual host file [$VIRTUAL_HOST_FILE] already exists."
+	echo "Aborting."
+	exit 1
+fi
+
+grep -q "$LOCAL_DOMAIN" "$ETC_HOSTS_FILE"
+if [ $? -eq $GREP_SUCCESS ]
+then
+	echo "The domain [$LOCAL_DOMAIN] is already present in [$ETC_HOSTS_FILE]. This script will not add it again."
+	echo "Do you wish to continue? (y/n)"
+	read REPLY 
+	if [[ ! $REPLY =~ ^[Yy]$ ]]
+	then
+		exit 1
+	fi
+fi
+
+if [ -n "$2" ]
+then
+	case "$2" in
+	"zf")	echo -n "Creating web directory with Zend Framework folder structure in [$WEB_DIR]... "
+			cp -r "$SCRIPT_PATH/default_project/zf" "$WEB_DIR"
+			mkdir $WEB_DIR_PUBLIC
+			echo "done!"
+			;;
+			
+	"wp")	echo -n "Creating web directory with WordPress in [$WEB_DIR]... "
+			mkdir $WEB_DIR
+			mkdir $WEB_DIR_PUBLIC
+			tar -jxf "$SCRIPT_PATH/default_project/wordpress-3.2.1.tar.bz2" -C "$WEB_DIR_PUBLIC"
+			echo "done!"
+			;;
+			
+	*)		echo "Unknown folder structure [$2]."
+			echo "Aborting."
+			exit 1
+			;;
+	esac
+else
+	echo -n "Creating web directory with default folder structure in [$WEB_DIR]... "
+	mkdir $WEB_DIR
+	mkdir $WEB_DIR_PUBLIC
+	echo "done!"
+fi
+
+echo -n "Creating a Virtual Host for [$LOCAL_DOMAIN], you'll need root rights for this... "
+sudo sh -c "echo \"$VIRTUAL_HOST_STRING\" > \"$VIRTUAL_HOST_FILE\""
+echo "done!"
+
+echo -n "Enabling the the Virtual Host for [$LOCAL_DOMAIN], you'll need root rights for this... "
+sudo sh -c "a2ensite \"$LOCAL_DOMAIN\" > /dev/null"
+echo "done!"
+
+echo -n "Adding entry in [$ETC_HOSTS_FILE], you'll need root rights for this... "
+grep -q "$LOCAL_DOMAIN" "$ETC_HOSTS_FILE"
+if [ ! $? -eq $GREP_SUCCESS ]
+then
+	sudo sh -c "echo \"$LOCAL_IP\t$LOCAL_DOMAIN\" >> \"$ETC_HOSTS_FILE\""
+	echo "done!"
+else
+	echo "NOT done! Host is already present in [$ETC_HOSTS_FILE]."
+fi
+
+echo -n "Reloading Apache, you'll need root rights for this... "
+sudo sh -c "service apache2 reload > /dev/null"
+echo "done!"

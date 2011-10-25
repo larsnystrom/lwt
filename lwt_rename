@@ -1,0 +1,73 @@
+if [ ! -n "$2" ]; then
+	echo "You have to enter a new project name after the current project name."
+	echo "Aborting."
+	exit 1
+fi
+
+PROJECT_NEW="$2"
+WEB_DIR_NEW="$WEB_DIR/../$PROJECT_NEW"
+LOCAL_DOMAIN_NEW="$PROJECT_NEW.localhost"
+VIRTUAL_HOST_FILE_NEW="$VIRTUAL_HOST_FILE_PATH/$LOCAL_DOMAIN_NEW"
+
+if [ ! -d $WEB_DIR -o ! -f $VIRTUAL_HOST_FILE ]; then
+	echo "Either the web directory [$WEB_DIR] or the Virtual Host file [$VIRTUAL_HOST_FILE] could not be found."
+	echo "Aborting."
+	exit 1
+fi
+
+if [ -d $WEB_DIR_NEW -o -f $VIRTUAL_HOST_FILE_NEW ]; then
+	echo "The directory [$WEB_DIR_NEW] or the virtual host file [$VIRTUAL_HOST_FILE_NEW] already exists."
+	echo "Aborting."
+	exit 1
+fi
+
+test -L "/etc/apache2/sites-enabled/$LOCAL_DOMAIN"
+SITE_ENABLED=$?
+
+if [ $SITE_ENABLED -eq $GREP_SUCCESS ]
+then
+	echo -n "Disabling the Virtual Host [$LOCAL_DOMAIN], you'll need root rights for this... "
+	sudo sh -c "a2dissite \"$LOCAL_DOMAIN\" > /dev/null"
+	echo "done!"
+fi
+
+echo -n "Editing the Virtual Hosts file, you'll need root rights for this... "
+sudo sh -c "sed -i \"s/$PROJECT/$PROJECT_NEW/g\" \"$VIRTUAL_HOST_FILE\""
+sudo sh -c "mv \"$VIRTUAL_HOST_FILE\" \"$VIRTUAL_HOST_FILE_NEW\""
+echo "done!"
+
+echo -n "Renaming the web directory [$WEB_DIR] to [$WEB_DIR_NEW]... "
+mv "$WEB_DIR" "$WEB_DIR_NEW"
+echo "done!"
+
+if [ $SITE_ENABLED -eq $GREP_SUCCESS ]
+then
+	echo -n "Removing entry [$LOCAL_DOMAIN] from [$ETC_HOSTS_FILE], you'll need root rights for this... "
+	grep -q "$LOCAL_DOMAIN" "$ETC_HOSTS_FILE"
+	if [ $? -eq $GREP_SUCCESS ]
+	then
+		sudo sh -c "sed -i \"/$LOCAL_IP\t$LOCAL_DOMAIN/d\" \"$ETC_HOSTS_FILE\""
+	
+		echo "Done!"
+	else
+		echo "NOT done! Host is not present in $ETC_HOSTS_FILE."
+	fi
+
+	echo -n "Adding entry [$LOCAL_DOMAIN_NEW] in [$ETC_HOSTS_FILE], you'll need root rights for this... "
+	grep -q "$LOCAL_DOMAIN_NEW" "$ETC_HOSTS_FILE"
+	if [ ! $? -eq $GREP_SUCCESS ]
+	then
+		sudo sh -c "echo \"$LOCAL_IP\t$LOCAL_DOMAIN_NEW\" >> \"$ETC_HOSTS_FILE\""
+		echo "done!"
+	else
+		echo "NOT done! Host is already present in [$ETC_HOSTS_FILE]."
+	fi
+	
+	echo -n "Enabling the Virtual Host [$LOCAL_DOMAIN_NEW], you'll need root rights for this... "
+	sudo sh -c "a2ensite \"$LOCAL_DOMAIN_NEW\" > /dev/null"
+	echo "done!"
+	
+	echo -n "Reloading Apache, you'll need root rights for this... "
+	sudo sh -c "service apache2 reload > /dev/null"
+	echo "done!"
+fi

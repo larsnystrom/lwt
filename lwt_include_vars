@@ -1,0 +1,19 @@
+PROJECT=$1
+WEB_DIR="$HOME/www/$PROJECT"
+WEB_DIR_PUBLIC="$WEB_DIR/public"
+
+LOCAL_DOMAIN="$PROJECT.localhost"
+LOCAL_IP="127.0.0.1"
+
+VIRTUAL_HOST_STRING=$(source "$SCRIPT_PATH/lwt_vhost_conf")
+VIRTUAL_HOST_FILE_PATH="/etc/apache2/sites-available"
+VIRTUAL_HOST_FILE="$VIRTUAL_HOST_FILE_PATH/$LOCAL_DOMAIN"
+
+ZEND_LIBRARY_PATH="$HOME/www/library/PHP/ZendFramework-1.11.10/library/Zend"
+
+ETC_HOSTS_FILE="/etc/hosts"
+GREP_SUCCESS=0
+
+BACKUP_PATH="$HOME/backup/www" 					#This directory must exist
+BACKUP_TEMP_PATH="$BACKUP_PATH/$PROJECT/tmp" 	#This directory will be created and removed during backup
+BACKUP_FILE="$BACKUP_PATH/$PROJECT/$PROJECT.$(date '+%Y-%m-%d.%H:%M').tar.bz2"

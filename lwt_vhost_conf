@@ -1,0 +1,22 @@
+# The default Virtual Host configuration for Apache
+#
+# You may use the following variables:
+#	$LOCAL_DOMAIN		The domain, e.g. example.localhost
+#	$LOCAL_IP			The local IP-address, e.g. 127.0.0.1
+#	$WEB_DIR			The project directory, e.g. /home/user/www/example
+#	$WEB_DIR_PUBLIC		The public web directory, e.g. /home/user/www/example/public
+#	$PROJECT			The project name, e.g. example
+
+echo "# Setup $LOCAL_DOMAIN Virtual Host
+<VirtualHost *:80>
+	ServerName $LOCAL_DOMAIN
+	DocumentRoot $WEB_DIR_PUBLIC
+
+	<Directory $WEB_DIR_PUBLIC>
+		Options -Indexes -FollowSymLinks -Includes
+		AllowOverride All
+		Order deny,allow
+		Deny from all
+		Allow from $LOCAL_IP
+	</Directory>
+</VirtualHost>"

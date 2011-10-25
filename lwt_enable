@@ -1,0 +1,30 @@
+if [ ! -f $VIRTUAL_HOST_FILE ]; then
+	echo "There is no Virtual Host for [$LOCAL_DOMAIN]."
+	echo "Aborting."
+	exit 1
+fi
+
+test -L "/etc/apache2/sites-enabled/$LOCAL_DOMAIN"
+SITE_ENABLED=$?
+
+if [ ! $SITE_ENABLED -eq $GREP_SUCCESS ]; then
+	echo -n "Enabling the Virtual Host [$LOCAL_DOMAIN], you'll need root rights for this... "
+	sudo sh -c "a2ensite \"$LOCAL_DOMAIN\" > /dev/null"
+	echo "done!"
+	
+	echo -n "Reloading Apache, you'll need root rights for this... "
+	sudo sh -c "service apache2 reload > /dev/null"
+	echo "done!"
+else
+	echo "The Virtual Host [$LOCAL_DOMAIN] is already enabled."
+fi
+
+echo -n "Adding entry [$LOCAL_DOMAIN] in [$ETC_HOSTS_FILE], you'll need root rights for this... "
+grep -q "$LOCAL_DOMAIN" "$ETC_HOSTS_FILE"
+if [ ! $? -eq $GREP_SUCCESS ]
+then
+	sudo sh -c "echo \"$LOCAL_IP\t$LOCAL_DOMAIN\" >> \"$ETC_HOSTS_FILE\""
+	echo "done!"
+else
+	echo "NOT done! Host is already present in [$ETC_HOSTS_FILE]."
+fi

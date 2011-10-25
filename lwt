@@ -1,0 +1,40 @@
+#!/bin/bash
+#Lars Web Tools
+
+if [ $# -lt 2 ]
+then
+        echo "Usage : $0 command project [extra]"
+        exit
+fi
+
+SCRIPT_PATH="$( cd -P "$( dirname "$0" )" && pwd )"
+source "$SCRIPT_PATH/lwt_include_vars" $2
+
+if [ ! -n "$WEB_DIR" ]; then
+	echo "Couldn't include the variables."
+	echo "Aborting."
+	exit 1
+fi
+
+case "$1" in
+	"create")	source "$SCRIPT_PATH/lwt_create" $2 $3
+				;;
+	
+	"delete")	source "$SCRIPT_PATH/lwt_delete" $2
+				;;
+				
+	"backup")	source "$SCRIPT_PATH/lwt_backup" $2
+				;;
+				
+	"rename")	source "$SCRIPT_PATH/lwt_rename" $2 $3
+				;;
+							
+	"enable")	source "$SCRIPT_PATH/lwt_enable" $2
+				;;
+							
+	"disable")	source "$SCRIPT_PATH/lwt_disable" $2
+				;;
+				
+	*) 			echo "No such command."
+				;;
+esac
