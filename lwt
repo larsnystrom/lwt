@@ -2,6 +2,7 @@
 #Lars Web Tools
 
 #Master branch
+#Detta är ett test
 
 if [ $# -lt 2 ]
 then
