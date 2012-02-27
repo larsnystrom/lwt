@@ -6,6 +6,11 @@
 #	$WEB_DIR			The project directory, e.g. /home/user/www/example
 #	$WEB_DIR_PUBLIC		The public web directory, e.g. /home/user/www/example/public
 #	$PROJECT			The project name, e.g. example
+#
+# Options
+# Indexes is forbidden because it's a security risk
+# FollowSymLinks has to be allowed for RewriteEngine to work
+# Includes is something I don't understand. That's normally a bad thing.
 
 echo "# Setup $LOCAL_DOMAIN Virtual Host
 <VirtualHost *:80>
@@ -13,7 +18,7 @@ echo "# Setup $LOCAL_DOMAIN Virtual Host
 	DocumentRoot $WEB_DIR_PUBLIC
 
 	<Directory $WEB_DIR_PUBLIC>
-		Options -Indexes -FollowSymLinks -Includes
+		Options -Indexes +FollowSymLinks -Includes
 		AllowOverride All
 		Order deny,allow
 		Deny from all
