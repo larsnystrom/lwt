@@ -1,8 +1,9 @@
-if [ ! -d $WEB_DIR -o ! -f $VIRTUAL_HOST_FILE ]; then
-	echo "The directory [$WEB_DIR] or the virtual host file [$VIRTUAL_HOST_FILE] doesn't exist."
-	echo "Aborting."
-	exit 1
-fi
+# This check is not really necessary.
+#if [ ! -d $WEB_DIR -o ! -f $VIRTUAL_HOST_FILE ]; then
+#	echo "The directory [$WEB_DIR] or the virtual host file [$VIRTUAL_HOST_FILE] doesn't exist."
+#	echo "Aborting."
+#	exit 1
+#fi
 
 echo "Do you wish to DELETE [$LOCAL_DOMAIN] and ALL CONTENT in [$WEB_DIR]? This action can not be undone."
 echo "Continue? (y/n)"
