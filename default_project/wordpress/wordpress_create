@@ -1,0 +1,9 @@
+echo -n "Creating web directory with WordPress in [$WEB_DIR]... "
+mkdir $WEB_DIR
+mkdir $WEB_DIR_PUBLIC
+mkdir $WEB_DIR/data
+mkdir $WEB_DIR/data/logs
+chmod a+w $WEB_DIR/data/logs
+tar -jxf "$SCRIPT_PATH/default_project/wordpress/wordpress-3.3.tar.bz2" -C "$WEB_DIR_PUBLIC"
+chmod a+w "$WEB_DIR_PUBLIC" -R
+echo "done!"
