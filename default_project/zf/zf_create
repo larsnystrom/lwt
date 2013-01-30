@@ -1,7 +1,12 @@
 echo -n "Creating web directory with Zend Framework in [$WEB_DIR]... "
+
+ZF="$HOME/www/library/PHP/ZendFramework-1.11.10/bin/zf.sh"
+ZF_LIBRARY="$WORKING_SPACE/library/PHP/ZendFramework-1.11.10/library/Zend"
+
 $ZF create project $WEB_DIR $PROJECT
 ln -s "$ZF_LIBRARY" "$WEB_DIR/library/Zend"
-mkdir $WEB_DIR/data
-mkdir $WEB_DIR/data/logs
-chmod a+w $WEB_DIR/data/logs
+mkdir "$WEB_DIR/data"
+mkdir "$WEB_DIR/data/logs"
+chmod a+w "$WEB_DIR/data/logs"
+
 echo "done!"
