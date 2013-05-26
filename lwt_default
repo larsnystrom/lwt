@@ -1,0 +1,43 @@
+#!/bin/bash
+#Lars Web Tools
+
+if [ $# -lt 0 ]
+then
+        echo "Usage : $0 command [project]"
+        exit
+fi
+
+SCRIPT_PATH="$( cd -P "$( dirname "$0" )" && pwd )"
+source "$SCRIPT_PATH/lwt_include_vars" $2
+
+if [ -n "$1" ] && ! [ -f $VIRTUAL_HOST_FILE ]; then
+	echo "There is no Virtual Host for [$LOCAL_DOMAIN]."
+	echo "Aborting."
+	exit 1
+fi
+
+# Get sudo permissions
+sudo echo -n ""
+if [ $? -eq 1 ]; then
+	echo "Permission denied"
+	exit 1
+fi
+
+if [ -f $DEFAULT_HOST_LINK ] || [ -L $DEFAULT_HOST_LINK ]; then
+    echo -n "Removing previous default symlink... "
+    sudo sh -c "rm \"$DEFAULT_HOST_LINK\""
+    echo "done!"
+fi
+
+if [ -n "$1" ]; then
+    echo -n "Creating new symlink to [$PROJECT]... "
+    sudo sh -c "ln -s \"$VIRTUAL_HOST_FILE\" \"$DEFAULT_HOST_LINK\""
+    echo "done!"
+else
+    echo -n "Creating new symlink to default... "
+    sudo sh -c "ln -s \"$DEFAULT_HOST_FILE\" \"$DEFAULT_HOST_LINK\""
+    echo "done!"
+fi
+
+echo -ne "\nRestart apache for changes to take effect.\n"
+

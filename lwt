@@ -35,6 +35,9 @@ case "$1" in
 	"disable")	source "$SCRIPT_PATH/lwt_disable" $2
 				;;
 				
+	"default")  source "$SCRIPT_PATH/lwt_default" $2
+	            ;;
+				
 	*) 			echo "No such command."
 				;;
 esac
