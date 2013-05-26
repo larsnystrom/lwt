@@ -60,7 +60,4 @@ else
 	echo "NOT done! Host is already present in [$ETC_HOSTS_FILE]."
 fi
 
-# Reload Apache
-echo -n "Reloading Apache... "
-sudo sh -c "service apache2 restart | echo > /dev/null"
-echo "done!"
+echo -n "Restart apache for changes to take effect."
