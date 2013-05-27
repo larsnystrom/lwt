@@ -1,3 +1,6 @@
+#!/bin/bash
+# Backup - Lars Web Tools
+
 if [ ! -d $WEB_DIR -a ! -f $VIRTUAL_HOST_FILE ]; then
 	echo "Neither the web directory [$WEB_DIR] nor the Virtual Host file [$VIRTUAL_HOST_FILE] could be found."
 	echo "Aborting."

@@ -1,3 +1,6 @@
+#!/bin/bash
+# Rename - Lars Web Tools
+
 if [ ! -n "$2" ]; then
 	echo "You have to enter a new project name after the current project name."
 	echo "Aborting."

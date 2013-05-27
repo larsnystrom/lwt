@@ -1,3 +1,6 @@
+#!/bin/bash
+# Create - Lars Web Tools
+
 if [ -d $WEB_DIR -o -f $VIRTUAL_HOST_FILE ]; then
 	echo "The directory [$WEB_DIR] or the virtual host file [$VIRTUAL_HOST_FILE] already exists."
 	echo "Aborting."

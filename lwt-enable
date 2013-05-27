@@ -1,3 +1,6 @@
+#!/bin/bash
+# Enable - Lars Web Tools
+
 if [ ! -f $VIRTUAL_HOST_FILE ]; then
 	echo "There is no Virtual Host for [$LOCAL_DOMAIN]."
 	echo "Aborting."

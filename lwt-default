@@ -1,5 +1,5 @@
 #!/bin/bash
-#Lars Web Tools
+# Default - Lars Web Tools
 
 if [ $# -lt 0 ]
 then
