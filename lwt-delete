@@ -16,19 +16,19 @@ then
 	exit 1
 fi
 
-echo -n "Deleting folder $WEB_DIR and all content... "
+echo -n "Deleting folder [$WEB_DIR] and all content... "
 rm -r "$WEB_DIR"
 echo "done!"
 
-echo -n "Disabling the Virtual Host for $LOCAL_DOMAIN, you'll need root rights for this... "
+echo -n "Disabling the Virtual Host for [$LOCAL_DOMAIN]... "
 sudo sh -c "a2dissite \"$LOCAL_DOMAIN\" > /dev/null"
 echo "done!"
 
-echo -n "Removing up the Virtual Host for $LOCAL_DOMAIN, you'll need root rights for this... "
+echo -n "Removing up the Virtual Host for [$LOCAL_DOMAIN]... "
 sudo rm "$VIRTUAL_HOST_FILE"
 echo "done!"
 
-echo -n "Removing entry from $ETC_HOSTS_FILE, you'll need root rights for this... "
+echo -n "Removing entry from [$ETC_HOSTS_FILE]... "
 grep -q "$LOCAL_DOMAIN" "$ETC_HOSTS_FILE"
 if [ $? -eq $GREP_SUCCESS ]
 then
@@ -37,9 +37,9 @@ then
 	sudo mv "$TEMP_FILE" "$ETC_HOSTS_FILE"
 	echo "done!"
 else
-	echo "aborted. Host is not present in $ETC_HOSTS_FILE."
+	echo "aborted. Host is not present in [$ETC_HOSTS_FILE]."
 fi
 
-echo -n "Reloading Apache, you'll need root rights for this... "
-sudo sh -c "service apache2 reload > /dev/null"
-echo "done!"
+echo 
+echo "Restart apache for changes to take effect."
+echo 
