@@ -48,5 +48,5 @@ else
 fi
 
 echo 
-echo "Restart apache for changes to take effect."
+echo "Reload apache for changes to take effect."
 echo 
