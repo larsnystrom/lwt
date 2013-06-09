@@ -1,9 +1,39 @@
-echo -n "Creating web directory with WordPress in [$WEB_DIR]... "
-mkdir $WEB_DIR
-mkdir $WEB_DIR_PUBLIC
-mkdir $WEB_DIR/data
-mkdir $WEB_DIR/data/logs
-chmod a+w $WEB_DIR/data/logs
-tar -jxf "$SCRIPT_PATH/default_project/wordpress/wordpress-3.3.tar.bz2" -C "$WEB_DIR_PUBLIC"
-chmod a+w "$WEB_DIR_PUBLIC" -R
+echo -n " # Creating web directory with default folder structure in [$WEB_DIR]... "
+
+mkdir "$WEB_DIR"
+chmod 770 "$WEB_DIR"
+chmod g+s "$WEB_DIR"
+sudo sh -c "chgrp www-data \"$WEB_DIR\""
+setfacl -d -m g::rwx "$WEB_DIR"
+
+mkdir "$WEB_DIR_PUBLIC"
+mkdir "$WEB_DIR/data"
+mkdir "$WEB_DIR/data/logs"
+echo "done!"
+
+echo " # Downloading WordPress... "
+wget http://wordpress.org/latest.tar.gz -O /tmp/lwt-wp.tar.gz
+echo " # done!"
+
+echo -n " # Extracting and moving WordPress... "
+tar -xzf /tmp/lwt-wp.tar.gz -C /tmp/
+mv /tmp/wordpress/* "$WEB_DIR_PUBLIC"
+echo "done!"
+
+echo -n " # Setting permissions... "
+for f in $(find "$WEB_DIR_PUBLIC"); do
+	if [ -d "$f" ]; then
+	    chmod 770 "$f"
+	    chmod g+s "$f"
+		setfacl -d -m g::rwx "$f"
+	elif [ -f "$f" ]; then 
+	    chmod 660 "$f"
+	fi
+	chgrp www-data "$f"
+done
+echo "done!"
+
+echo -n " # Removing tmp files... "
+rm /tmp/lwt-wp.tar.gz
+rmdir /tmp/wordpress
 echo "done!"
