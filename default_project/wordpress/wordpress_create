@@ -1,16 +1,3 @@
-echo -n " # Creating web directory with default folder structure in [$WEB_DIR]... "
-
-mkdir "$WEB_DIR"
-chmod 770 "$WEB_DIR"
-chmod g+s "$WEB_DIR"
-sudo sh -c "chgrp www-data \"$WEB_DIR\""
-setfacl -d -m g::rwx "$WEB_DIR"
-
-mkdir "$WEB_DIR_PUBLIC"
-mkdir "$WEB_DIR/data"
-mkdir "$WEB_DIR/data/logs"
-echo "done!"
-
 echo " # Downloading WordPress... "
 wget http://wordpress.org/latest.tar.gz -O /tmp/lwt-wp.tar.gz
 echo " # done!"
