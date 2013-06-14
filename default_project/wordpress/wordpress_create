@@ -21,6 +21,13 @@ mv /tmp/wordpress/* "$WEB_DIR_PUBLIC"
 echo "done!"
 
 echo -n " # Setting permissions... "
+groups | grep "$APACHE_USER" > /dev/null
+if [ $? -eq $GREP_SUCCESS ]; then
+    group_www=0
+else
+    group_www=1
+fi
+
 for f in $(find "$WEB_DIR_PUBLIC"); do
 	if [ -d "$f" ]; then
 	    chmod 770 "$f"
@@ -29,7 +36,12 @@ for f in $(find "$WEB_DIR_PUBLIC"); do
 	elif [ -f "$f" ]; then 
 	    chmod 660 "$f"
 	fi
-	chgrp www-data "$f"
+
+    if [ $group_www ]; then
+	   chgrp "$APACHE_USER" "$f"
+    else
+        sudo chgrp "$APACHE_USER" "$f"
+    fi
 done
 echo "done!"
 

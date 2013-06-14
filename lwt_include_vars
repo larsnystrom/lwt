@@ -20,3 +20,5 @@ GREP_SUCCESS=0
 BACKUP_PATH="$HOME/backup/www" 					#This directory must exist
 BACKUP_TEMP_PATH="$BACKUP_PATH/$PROJECT/tmp" 	#This directory will be created and removed during backup
 BACKUP_FILE="$BACKUP_PATH/$PROJECT/$PROJECT.$(date '+%Y-%m-%d.%H:%M').tar.bz2"
+
+APACHE_USER="www-data"
