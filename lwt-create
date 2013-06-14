@@ -39,7 +39,7 @@ else
 	mkdir "$WEB_DIR"
 	chmod 770 "$WEB_DIR"
 	chmod g+s "$WEB_DIR"
-	sudo sh -c "chgrp www-data \"$WEB_DIR\""
+	sudo sh -c "chgrp \"$APACHE_USER\" \"$WEB_DIR\""
 	setfacl -d -m g::rwx "$WEB_DIR"
 	
 	mkdir "$WEB_DIR_PUBLIC"
