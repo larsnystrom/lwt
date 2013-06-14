@@ -7,6 +7,12 @@ then
         exit
 fi
 
+if [ "$(whoami)" = "root" ]; then
+	echo "This program should not be run as root."
+	echo "Aborting."
+	exit 1
+fi
+
 SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source "$SCRIPT_PATH/lwt_include_vars" $2
 
