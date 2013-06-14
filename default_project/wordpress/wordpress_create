@@ -38,7 +38,7 @@ for f in $(find "$WEB_DIR_PUBLIC"); do
 	fi
 
     if [ $group_www ]; then
-	   chgrp "$APACHE_USER" "$f"
+        chgrp "$APACHE_USER" "$f"
     else
         sudo chgrp "$APACHE_USER" "$f"
     fi
