@@ -16,9 +16,9 @@ echo "# Setup $LOCAL_DOMAIN Virtual Host
 <VirtualHost *:80>
 	ServerName $LOCAL_DOMAIN
 	DocumentRoot $WEB_DIR_PUBLIC
-	
+
 	SetEnv APPLICATION_ENV "development"
-	
+
 	# PHP error handling for development servers
 	php_flag display_startup_errors on
 	php_flag display_errors on
@@ -41,5 +41,7 @@ echo "# Setup $LOCAL_DOMAIN Virtual Host
 		Deny from all
 		Allow from $LOCAL_IP
 		Allow from 192.168.0.0/24
+		Allow from 10.0.0.0/8
+		Require ip $LOCAL_IP 192.168.0.0/24 10.0.0.0/8
 	</Directory>
 </VirtualHost>"
