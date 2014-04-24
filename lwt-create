@@ -11,7 +11,7 @@ grep -q "$LOCAL_DOMAIN" "$ETC_HOSTS_FILE"
 if [ $? -eq $GREP_SUCCESS ]; then
 	echo "The domain [$LOCAL_DOMAIN] is already present in [$ETC_HOSTS_FILE]. This script will not add it again."
 	echo "Do you wish to continue? (y/n)"
-	read REPLY 
+	read REPLY
 	if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 		exit 1
 	fi
@@ -27,10 +27,6 @@ fi
 # Create folders and copy default files
 echo -n "Creating web directory with default folder structure in [$WEB_DIR]... "
 mkdir "$WEB_DIR"
-chmod 770 "$WEB_DIR"
-chmod g+s "$WEB_DIR"
-sudo sh -c "chgrp \"$APACHE_USER\" \"$WEB_DIR\""
-setfacl -d -m g::rwx "$WEB_DIR"
 
 mkdir "$WEB_DIR_PUBLIC"
 mkdir "$WEB_DIR/data"
@@ -65,6 +61,6 @@ else
 	echo "NOT done! Host is already present in [$ETC_HOSTS_FILE]."
 fi
 
-echo 
+echo
 echo "Reload apache for changes to take effect."
-echo 
+echo
