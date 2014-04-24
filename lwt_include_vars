@@ -9,10 +9,10 @@ LOCAL_IP="127.0.0.1"
 
 VIRTUAL_HOST_STRING=$(source "$SCRIPT_PATH/lwt_vhost_conf")
 VIRTUAL_HOST_FILE_PATH="/etc/apache2/sites-available"
-VIRTUAL_HOST_FILE="$VIRTUAL_HOST_FILE_PATH/$LOCAL_DOMAIN"
+VIRTUAL_HOST_FILE="$VIRTUAL_HOST_FILE_PATH/$LOCAL_DOMAIN.conf"
 
 DEFAULT_HOST_FILE="$SCRIPT_PATH/default_host/default"
-DEFAULT_HOST_LINK="$VIRTUAL_HOST_FILE_PATH/default"
+DEFAULT_HOST_LINK="/etc/apache2/sites-enabled/00-default"
 
 ETC_HOSTS_FILE="/etc/hosts"
 GREP_SUCCESS=0
@@ -21,4 +21,6 @@ BACKUP_PATH="$HOME/backup/www" 					#This directory must exist
 BACKUP_TEMP_PATH="$BACKUP_PATH/$PROJECT/tmp" 	#This directory will be created and removed during backup
 BACKUP_FILE="$BACKUP_PATH/$PROJECT/$PROJECT.$(date '+%Y-%m-%d.%H:%M').tar.bz2"
 
-APACHE_USER="www-data"
+SERVER_USER="www-data"
+SERVER_GROUP="www-data"
+PRE=" # "
