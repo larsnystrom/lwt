@@ -43,7 +43,9 @@ fi
 
 # Create Virtual Host
 echo -n "Creating Virtual Host for [$LOCAL_DOMAIN]... "
-sudo sh -c "echo \"$VIRTUAL_HOST_STRING\" > \"$VIRTUAL_HOST_FILE\""
+mkdir "$WEB_DIR/data/vhost"
+echo "$VIRTUAL_HOST_STRING" > "$WEB_DIR/data/vhost/vhost.apache2"
+sudo ln -s "$WEB_DIR/data/vhost/vhost.apache2" "$VIRTUAL_HOST_FILE"
 echo "done!"
 
 # Enable Virtual Host
