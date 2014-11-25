@@ -1,8 +1,6 @@
 #!/bin/bash
 # Create - Lars Web Tools
 
-
-readonly GREP_SUCCESS=0
 readonly TLD=".localhost"
 
 abort() {
@@ -102,7 +100,7 @@ if [ -f "$VHOST" -o -h "$VHOST" ]; then
 fi
 
 grep -q "$DOMAIN" /etc/hosts
-if [ $? -eq $GREP_SUCCESS ]; then
+if [ $? -eq 0 ]; then
 	echo "The domain [$DOMAIN] is already present in [/etc/hosts]. This script will not add it again."
 	echo "Do you wish to continue? (y/n)"
 	read REPLY
@@ -143,7 +141,7 @@ echo "done!"
 # Add entry in /etc/hosts
 echo -n "Adding entry in /etc/hosts... "
 grep -q "$DOMAIN" "/etc/hosts"
-if [ ! $? -eq $GREP_SUCCESS ]; then
+if [ ! $? -eq 0 ]; then
 	sudo sh -c "echo \"127.0.0.1\t$DOMAIN\" >> \"/etc/hosts\""
 	echo "done!"
 else
