@@ -6,8 +6,8 @@ readonly GREP_SUCCESS=0
 readonly TLD=".localhost"
 
 abort() {
-	echo $(date +%FT%T) ${BASH_SOURCE[1]##*/}[${BASH_LINENO[0]}]: "${@}"
-	echo "Aborting"
+	echo ${BASH_SOURCE[1]##*/}[${BASH_LINENO[0]}]: "${@}"
+	echo "Aborting."
 	exit 1
 }
 
@@ -56,10 +56,9 @@ apache::version() {
 }
 
 apache::config_get() {
-	if [ "$#" -ne 2 ]; then abort "Not enough parameters."; fi
+	if [ "$#" -ne 1 ]; then abort "Not enough parameters."; fi
 
-	local __return=$1
-	local __key=$2
+	local __key=$1
 
 	apachectl -S &> /dev/null
 	if [ $? -ne 0 ]; then
@@ -69,22 +68,21 @@ apache::config_get() {
 	local conf="`apachectl -S 2> /dev/null`"
 	conf=`echo "$conf" | grep "${__key}"`
 	conf=`expr "$conf" : "${__key}: \"\(.*\)\""`
-	eval $__return="'$conf'"
+
+	echo "$conf"
 }
 
 vercomp "`apache::version`" "2.4.0"
 if [ $? -ne 1 ]; then
-	echo "Apache 2.4.0 or later required."
-	exit 1
+	abort "Apache 2.4.0 or later required."
 fi
 
 if [ "$#" -ne 1 ]; then
-	echo "Usage: $0 PROJECT"
-	exit 1
+	abort "Usage: $0 PROJECT"
 fi
 
 SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-apache::config_get APACHE_DIR "ServerRoot"
+APACHE_DIR="`apache::config_get "ServerRoot"`"
 PROJECT=$1
 PROJECT_DIR="`pwd`/${PROJECT}"
 DOMAIN="${PROJECT}${TLD}"
