@@ -1,11 +1,6 @@
 #!/bin/bash
 # Create - Lars Web Tools
 
-SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
-source "${SCRIPT_PATH}/lib/core.sh"
-source "${SCRIPT_PATH}/lib/apache.sh"
-
 if [ "$#" -ne 1 ]; then
 	abort "Usage: $0 PROJECT"
 fi

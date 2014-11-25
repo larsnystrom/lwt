@@ -1,11 +1,6 @@
 #!/bin/bash
 # Delete - Lars Web Tools
 
-SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
-source "${SCRIPT_PATH}/lib/core.sh"
-source "${SCRIPT_PATH}/lib/apache.sh"
-
 readonly TLD=".localhost"
 PROJECT=$1
 PROJECT_DIR="`pwd`/${PROJECT}"
@@ -54,3 +49,5 @@ fi
 echo
 echo "Reload apache for changes to take effect."
 echo
+
+exit 0
