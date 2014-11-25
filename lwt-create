@@ -5,17 +5,45 @@
 readonly GREP_SUCCESS=0
 readonly TLD=".localhost"
 
-function abort {
+abort() {
 	echo $(date +%FT%T) ${BASH_SOURCE[1]##*/}[${BASH_LINENO[0]}]: "${@}"
 	echo "Aborting"
 	exit 1
 }
 
-function apache::version {
-	if [ "$#" -ne 1 ]; then abort "Not enough parameters."; fi
+# vercomp by Dennis Williamson, see http://stackoverflow.com/a/4025065/1227116
+vercomp() {
+	if [[ $1 == $2 ]]
+	then
+		return 0
+	fi
+	local IFS=.
+	local i ver1=($1) ver2=($2)
+	# fill empty fields in ver1 with zeros
+	for ((i=${#ver1[@]}; i<${#ver2[@]}; i++))
+	do
+		ver1[i]=0
+	done
+	for ((i=0; i<${#ver1[@]}; i++))
+	do
+		if [[ -z ${ver2[i]} ]]
+		then
+			# fill empty fields in ver2 with zeros
+			ver2[i]=0
+		fi
+		if ((10#${ver1[i]} > 10#${ver2[i]}))
+		then
+			return 1
+		fi
+		if ((10#${ver1[i]} < 10#${ver2[i]}))
+		then
+			return 2
+		fi
+	done
+	return 0
+}
 
-	local __return=$1
-
+apache::version() {
 	apachectl -v &> /dev/null
 	if [ $? -ne 0 ]; then
 		abort "Error running \`apachectl -v\`."
@@ -24,10 +52,10 @@ function apache::version {
 	local apache_ver="`apachectl -v 2> /dev/null`"
 	apache_ver=`echo "$apache_ver" | grep "Server version"`
 	apache_ver=`expr "$apache_ver" : 'Server version: Apache/\(.*\) .*'`
-	eval $__return="'$apache_ver'"
+	echo $apache_ver
 }
 
-function apache::config_get {
+apache::config_get() {
 	if [ "$#" -ne 2 ]; then abort "Not enough parameters."; fi
 
 	local __return=$1
@@ -43,6 +71,12 @@ function apache::config_get {
 	conf=`expr "$conf" : "${__key}: \"\(.*\)\""`
 	eval $__return="'$conf'"
 }
+
+vercomp "`apache::version`" "2.4.0"
+if [ $? -ne 1 ]; then
+	echo "Apache 2.4.0 or later required."
+	exit 1
+fi
 
 if [ "$#" -ne 1 ]; then
 	echo "Usage: $0 PROJECT"
@@ -121,3 +155,5 @@ fi
 echo
 echo "Reload apache for changes to take effect."
 echo
+
+exit 0
