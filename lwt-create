@@ -58,9 +58,9 @@ apache::config_get() {
 
 	local __key=$1
 
-	apachectl -S &> /dev/null
+	apachectl -t -D DUMP_RUN_CFG &> /dev/null
 	if [ $? -ne 0 ]; then
-		abort "Error running \`apachectl -S\`."
+		abort "Error running \`apachectl -t -D DUMP_RUN_CFG\`."
 	fi
 
 	local conf="`apachectl -S 2> /dev/null`"
