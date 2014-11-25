@@ -46,3 +46,26 @@ vercomp() {
 	done
 	return 0
 }
+
+# Confirm this action or exit
+#
+# @parameters STRING [...]
+confirm_or_exit() {
+	echo "$@"
+	echo "Do you wish to continue? (y/n)"
+	read REPLY
+	if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+		exit 1
+	fi
+}
+
+# Ask for sudo
+#
+# @parameters STRING [...]
+sudo_please() {
+	echo "$@"
+	sudo echo -n ""
+	if [ $? -eq 1 ]; then
+		abort "Permission denied"
+	fi
+}

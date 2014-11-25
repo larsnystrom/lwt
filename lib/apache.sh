@@ -7,6 +7,9 @@
 #
 # Globals:
 # $APACHE_DIR	Holds the path to the global apache configuration.
+#
+# Requires:
+# $SCRIPT_PATH to be the directory where this application lives.
 
 # Initialize this module
 #
@@ -54,7 +57,21 @@ apache::host_create() {
 	sudo ln -s "$__path" "$__host"
 }
 
-# Enable virtual host form domain
+# Delete virtual host for domain
+#
+# NOTE: This function doesn't remove the host from the project
+# directory, only from apache's configuration.
+#
+# @parameters DOMAIN
+apache::host_delete() {
+	if [ "$#" -ne 1 ]; then abort "Not enough parameters."; fi
+
+	local __host="${APACHE_DIR}/sites-available/${1}.conf"
+
+	sudo rm "$__host"
+}
+
+# Enable virtual host for domain
 #
 # @parameters DOMAIN
 apache::host_enable() {
@@ -63,6 +80,17 @@ apache::host_enable() {
 	local __domain="${1}.conf"
 
 	sudo sh -c "a2ensite \"$__domain\" > /dev/null"
+}
+
+# Disable virtual host for domain
+#
+# @parameters DOMAIN
+apache::host_disable() {
+	if [ "$#" -ne 1 ]; then abort "Not enough parameters."; fi
+
+	local __domain="${1}.conf"
+
+	sudo sh -c "a2dissite \"$__domain\" > /dev/null"
 }
 
 # Get Apache version

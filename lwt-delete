@@ -1,50 +1,54 @@
 #!/bin/bash
 # Delete - Lars Web Tools
 
-# This check is not really necessary.
-if [ ! -d $WEB_DIR -o ! -f $VIRTUAL_HOST_FILE ]; then
-	echo "The directory [$WEB_DIR] or the virtual host file [$VIRTUAL_HOST_FILE] doesn't exist."
-	echo "Aborting."
-	exit 1
+SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+source "${SCRIPT_PATH}/lib/core.sh"
+source "${SCRIPT_PATH}/lib/apache.sh"
+
+readonly TLD=".localhost"
+PROJECT=$1
+PROJECT_DIR="`pwd`/${PROJECT}"
+DOMAIN="${PROJECT}${TLD}"
+
+apache::init
+
+if [ ! -d $PROJECT_DIR ]; then
+	abort "The directory [$PROJECT_DIR] doesn't exist."
 fi
 
-echo "Do you wish to DELETE [$LOCAL_DOMAIN] and ALL CONTENT in [$WEB_DIR]? This action can not be undone."
-echo "Continue? (y/n)"
-read REPLY
-if [[ ! $REPLY =~ ^[Yy]$ ]]
-then
-	exit 1
+apache::host_exists "$DOMAIN"
+if [ $? -ne 0 ]; then
+	abort "The virtual host file [$VIRTUAL_HOST_FILE] doesn't exist."
 fi
+
+confirm_or_exit "Do you wish to DELETE [$DOMAIN] and ALL CONTENT in [$PROJECT_DIR]? This action can not be undone."
 
 # Get sudo permissions
-sudo echo -n ""
-if [ $? -eq 1 ]; then
-	echo "Permission denied"
-	exit 1
-fi
+sudo_please "We need root permissions to remove the virtual host."
 
-echo -n "Deleting folder [$WEB_DIR] and all content... "
-sudo rm -r "$WEB_DIR"
+echo -n "Deleting folder [$PROJECT_DIR] and all content... "
+sudo rm -r "$PROJECT_DIR"
 echo "done!"
 
-echo -n "Disabling the Virtual Host for [$LOCAL_DOMAIN]... "
-sudo sh -c "a2dissite \"$LOCAL_DOMAIN\" > /dev/null"
+echo -n "Disabling the Virtual Host for [$DOMAIN]... "
+apache::host_disable "$DOMAIN"
 echo "done!"
 
-echo -n "Removing up the Virtual Host for [$LOCAL_DOMAIN]... "
-sudo rm "$VIRTUAL_HOST_FILE"
+echo -n "Removing up the Virtual Host for [$DOMAIN]... "
+apache::host_delete "$DOMAIN"
 echo "done!"
 
-echo -n "Removing entry from [$ETC_HOSTS_FILE]... "
-grep -q "$LOCAL_DOMAIN" "$ETC_HOSTS_FILE"
-if [ $? -eq $GREP_SUCCESS ]
+echo -n "Removing entry from [/etc/hosts]... "
+grep -q "$DOMAIN" "/etc/hosts"
+if [ $? -eq 0 ]
 then
-	TEMP_FILE="/tmp/zf_delete_project_tmp"
-	sed "/$LOCAL_IP\t$LOCAL_DOMAIN/d" $ETC_HOSTS_FILE > $TEMP_FILE
-	sudo mv "$TEMP_FILE" "$ETC_HOSTS_FILE"
+	TEMP_FILE="/tmp/lwt_delete_project_tmp"
+	sed "/127.0.0.1\t$DOMAIN/d" /etc/hosts > $TEMP_FILE
+	sudo mv "$TEMP_FILE" "/etc/hosts"
 	echo "done!"
 else
-	echo "aborted. Host is not present in [$ETC_HOSTS_FILE]."
+	echo "Host is not present in [/etc/hosts]."
 fi
 
 echo
