@@ -1,68 +1,66 @@
 #!/bin/bash
 # Create - Lars Web Tools
 
-if [ -d $WEB_DIR -o -f $VIRTUAL_HOST_FILE ]; then
-	echo "The directory [$WEB_DIR] or the virtual host file [$VIRTUAL_HOST_FILE] already exists."
-	echo "Aborting."
-	exit 1
+if [ "$#" -ne 1 ]; then
+	abort "Usage: $0 PROJECT"
 fi
 
-grep -q "$LOCAL_DOMAIN" "$ETC_HOSTS_FILE"
-if [ $? -eq $GREP_SUCCESS ]; then
-	echo "The domain [$LOCAL_DOMAIN] is already present in [$ETC_HOSTS_FILE]. This script will not add it again."
-	echo "Do you wish to continue? (y/n)"
-	read REPLY
-	if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-		exit 1
-	fi
+readonly TLD=".localhost"
+PROJECT=$1
+PROJECT_DIR="`pwd`/${PROJECT}"
+DOMAIN="${PROJECT}${TLD}"
+
+apache::init
+
+if [ -d "$PROJECT" ]; then
+	abort "The directory [$PROJECT] already exists."
+fi
+
+apache::host_exists "$DOMAIN"
+if [ $? -eq 0 ]; then
+	abort "The virtual host for [$DOMAIN] already exists."
+fi
+
+grep -q "$DOMAIN" /etc/hosts
+if [ $? -eq 0 ]; then
+	confirm_or_exit "The domain [$DOMAIN] is already present in [/etc/hosts]. This script will not add it again."
 fi
 
 # Get sudo permissions
-sudo echo -n ""
-if [ $? -eq 1 ]; then
-	echo "Permission denied"
-	exit 1
-fi
+sudo_please "We need root permissions to add the virtual host."
 
 # Create folders and copy default files
-echo -n "Creating web directory with default folder structure in [$WEB_DIR]... "
-mkdir "$WEB_DIR"
+echo -n "Creating web directory with default folder structure in [$PROJECT_DIR]... "
+mkdir "$PROJECT_DIR"
 
-mkdir "$WEB_DIR_PUBLIC"
-mkdir "$WEB_DIR/data"
-mkdir "$WEB_DIR/data/logs"
+mkdir "${PROJECT_DIR}/public"
+mkdir "${PROJECT_DIR}/data"
+mkdir "${PROJECT_DIR}/data/logs"
 echo "done!"
 
-if [ -n "$2" ]; then
-	if [ -d "$SCRIPT_PATH/default_project/$2" -a -f "$SCRIPT_PATH/default_project/$2/$2_create" ]; then
-		source "$SCRIPT_PATH/default_project/$2/$2_create"
-	else
-		echo "Unknown project type [$2]."
-	fi
-fi
-
 # Create Virtual Host
-echo -n "Creating Virtual Host for [$LOCAL_DOMAIN]... "
-mkdir "$WEB_DIR/data/vhost"
-echo "$VIRTUAL_HOST_STRING" > "$WEB_DIR/data/vhost/vhost.apache2"
-sudo ln -s "$WEB_DIR/data/vhost/vhost.apache2" "$VIRTUAL_HOST_FILE"
+echo -n "Creating Virtual Host for [$DOMAIN]... "
+mkdir "${PROJECT_DIR}/data/vhost"
+apache::host_create "$DOMAIN" "${PROJECT_DIR}/data/vhost/vhost.apache2"
 echo "done!"
 
 # Enable Virtual Host
-echo -n "Enabling Virtual Host for [$LOCAL_DOMAIN]... "
-sudo sh -c "a2ensite \"$LOCAL_DOMAIN\" > /dev/null"
+echo -n "Enabling Virtual Host for [$DOMAIN]... "
+apache::host_enable "$DOMAIN"
 echo "done!"
 
 # Add entry in /etc/hosts
-echo -n "Adding entry in [$ETC_HOSTS_FILE]... "
-grep -q "$LOCAL_DOMAIN" "$ETC_HOSTS_FILE"
-if [ ! $? -eq $GREP_SUCCESS ]; then
-	sudo sh -c "echo \"$LOCAL_IP\t$LOCAL_DOMAIN\" >> \"$ETC_HOSTS_FILE\""
+echo -n "Adding entry in /etc/hosts... "
+grep -q "$DOMAIN" "/etc/hosts"
+if [ ! $? -eq 0 ]; then
+	sudo sh -c "echo \"127.0.0.1\t$DOMAIN\" >> \"/etc/hosts\""
 	echo "done!"
 else
-	echo "NOT done! Host is already present in [$ETC_HOSTS_FILE]."
+	echo "Host is already present in [/etc/hosts]."
 fi
 
 echo
 echo "Reload apache for changes to take effect."
 echo
+
+exit 0
