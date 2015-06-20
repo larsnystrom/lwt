@@ -36,6 +36,9 @@ mkdir "$PROJECT_DIR"
 mkdir "${PROJECT_DIR}/public"
 mkdir "${PROJECT_DIR}/data"
 mkdir "${PROJECT_DIR}/data/logs"
+
+echo "Welcome to project ${PROJECT}!" >> "${PROJECT_DIR}/public/index.html"
+
 echo "done!"
 
 # Create Virtual Host
