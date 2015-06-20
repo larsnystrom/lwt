@@ -2,7 +2,8 @@
 # Create - Lars Web Tools
 
 if [ "$#" -ne 1 ]; then
-	abort "Usage: $0 PROJECT"
+	echo "Usage: lwt create <PROJECT>"
+	exit 1
 fi
 
 readonly TLD=".localhost"

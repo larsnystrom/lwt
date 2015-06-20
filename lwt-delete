@@ -1,6 +1,11 @@
 #!/bin/bash
 # Delete - Lars Web Tools
 
+if [ "$#" -ne 1 ]; then
+	echo "Usage: lwt delete <PROJECT>"
+	exit 1
+fi
+
 readonly TLD=".localhost"
 PROJECT=$1
 PROJECT_DIR="`pwd`/${PROJECT}"
