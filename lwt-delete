@@ -13,7 +13,7 @@ DOMAIN="${PROJECT}${TLD}"
 
 apache::init
 
-if [ ! -d $PROJECT_DIR ]; then
+if [ ! -d "$PROJECT_DIR" ]; then
 	abort "The directory [$PROJECT_DIR] doesn't exist."
 fi
 
