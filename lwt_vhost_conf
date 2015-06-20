@@ -1,10 +1,8 @@
 # The default Virtual Host configuration for Apache
 #
 # You may use the following variables:
-#	$LOCAL_DOMAIN		The domain, e.g. example.localhost
-#	$LOCAL_IP			The local IP-address, e.g. 127.0.0.1
-#	$WEB_DIR			The project directory, e.g. /home/user/www/example
-#	$WEB_DIR_PUBLIC		The public web directory, e.g. /home/user/www/example/public
+#	$DOMAIN				The domain, e.g. example.localhost
+#	$PROJECT_DIR		The project directory, e.g. /home/user/www/example
 #	$PROJECT			The project name, e.g. example
 #
 # Options
@@ -12,10 +10,10 @@
 # FollowSymLinks has to be allowed for RewriteEngine to work
 # Includes is something I don't understand. That's normally a bad thing.
 
-echo "# Setup $LOCAL_DOMAIN Virtual Host
+echo "# Setup $DOMAIN Virtual Host
 <VirtualHost *:80>
-	ServerName $LOCAL_DOMAIN
-	DocumentRoot $WEB_DIR_PUBLIC
+	ServerName $DOMAIN
+	DocumentRoot $PROJECT_DIR/public
 
 	SetEnv APPLICATION_ENV "development"
 
@@ -30,18 +28,18 @@ echo "# Setup $LOCAL_DOMAIN Virtual Host
 	php_flag track_errors on
 	php_value docref_root 0
 	php_value docref_ext 0
-	php_value error_log $WEB_DIR/data/logs/php_errors.log
+	php_value error_log $PROJECT_DIR/data/logs/php_errors.log
 	php_value error_reporting -1
 	php_value log_errors_max_len 0
 
-	<Directory $WEB_DIR_PUBLIC>
+	<Directory $PROJECT_DIR/public>
 		Options -Indexes +FollowSymLinks -Includes
 		AllowOverride All
 		Order deny,allow
 		Deny from all
-		Allow from $LOCAL_IP
+		Allow from 127.0.0.1
 		Allow from 192.168.0.0/24
 		Allow from 10.0.0.0/8
-		Require ip $LOCAL_IP 192.168.0.0/24 10.0.0.0/8
+		Require ip 127.0.0.1 192.168.0.0/24 10.0.0.0/8
 	</Directory>
 </VirtualHost>"
